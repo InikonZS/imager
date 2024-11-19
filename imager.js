@@ -67,21 +67,30 @@ class Editor{
   }
   
   setTransform(){
-    let sc = this.autoScale(this.imgBuffer.width, this.imgBuffer.height, 390, 260);
+    let sc = this.autoScale(this.imgBuffer.width, this.imgBuffer.height, this.settings.width, this.settings.height);
+    let autoCenterX = (this.settings.width - sc[0]) /2;
+    let autoCenterY = (this.settings.height - sc[1]) /2;
+    //console.log(autoCenterX, this.settings.width, this.imgBuffer.width, sc[0], sc[1]);
     this.canvas.fillStyle = '#ffffff';
-    this.canvas.fillRect(-1,-1,this.canvasElement.width+1,this.canvasElement.height+1);
-    this.canvas.drawImage(this.imgBuffer, this.imleft, this.imtop, sc[0]*this.sc, sc[1]*this.sc);  
+    //this.canvas.fillRect(-1,-1,this.canvasElement.width+1,this.canvasElement.height+1);
+    this.canvas.drawImage(this.imgBuffer, this.imleft + autoCenterX, this.imtop + autoCenterY, sc[0]*this.sc, sc[1]*this.sc);  
   }
 
   saveToFile(name){
     let name_ = name || this.filename;
-    var dataURL = this.canvasElement.toDataURL("image/jpeg");
+    var dataURL = this.canvasElement.toDataURL(this.settings?.format || "image/jpeg");
 	  var link = document.createElement("a");
 	  document.body.appendChild(link); // Firefox requires the link to be in the body :(
 	  link.href = dataURL;
 	  link.download = name_;
 	  link.click();
 	  document.body.removeChild(link);
+  }
+
+  setSettings(settings){
+    this.canvasElement.width = settings.width;
+    this.canvasElement.height = settings.height;
+    this.settings = settings;
   }
 }
 
@@ -90,6 +99,11 @@ const controlNode = document.querySelector('#app-controls');
 
 var editors=[];
 var appFiles = document.querySelector('#app-files');
+var appWidth = document.querySelector('#app-width');
+var appHeight = document.querySelector('#app-height');
+var appFormatJpg = document.querySelector('#app-format-jpg');
+var appFormatPng = document.querySelector('#app-format-png');
+
 var changeHandler = ()=>{
   editors = [];
   mainNode.innerHTML="";
@@ -99,6 +113,11 @@ var changeHandler = ()=>{
   }
   files.forEach((it)=>{
     let ed = new Editor(mainNode, window.URL.createObjectURL(it), it.name);
+    ed.setSettings({
+      width: appWidth.valueAsNumber,
+      height: appHeight.valueAsNumber,
+      format: appFormatPng.checked ? "image/png" : "image/jpeg"
+    })
     editors.push(ed);
   });
 }

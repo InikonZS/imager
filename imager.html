@@ -7,6 +7,13 @@
     <div id="app-controls">
       <form>
         <input id="app-files" type="file" accept="image/jpeg,image/png,image/gif" multiple>
+        <input id="app-width" type="number" value="100" min="1" max="10000">
+        <input id="app-height" type="number" value="100" min="1" max="10000">
+
+        <span>png</span>
+        <input id="app-format-png" type="radio" name="format" checked>
+        <span>jpg</span>
+        <input id="app-format-jpg" type="radio" name="format">
       </form>
     </div>
     <div id="app-main"></div>
